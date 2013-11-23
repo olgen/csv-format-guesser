@@ -18,14 +18,14 @@ Or install it yourself as:
 
 ## Usage
 
-require 'csv'
-require 'csv_format_guesser'
+    require 'csv'
+    require 'csv_format_guesser'
 
-path = 'sample.csv'
-opts = CsvFormatGuesser.new(path).csv_opts
-CSV.open(path, opts).each do |line|
-  puts line
-end
+    path = 'sample.csv'
+    opts = CsvFormatGuesser.new(path).csv_opts
+    CSV.open(path, opts).each do |line|
+      puts line
+    end
 
 
 ## Contributing
