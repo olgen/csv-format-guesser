@@ -18,7 +18,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+require 'csv'
+require 'csv_format_guesser'
+
+path = 'sample.csv'
+opts = CsvFormatGuesser.new(path).csv_opts
+CSV.open(path, opts).each do |line|
+  puts line
+end
+
 
 ## Contributing
 
