@@ -20,11 +20,18 @@ describe CsvFormatGuesser do
     its(:quote_char) { should == "'" }
   end
 
+  context 'pipe separated' do
+    let(:file) { 'spec/fixtures/files/pipe_separated.csv' }
+    its(:col_sep) { should == '|' }
+    its(:encoding) { should == 'utf-8' }
+    its(:quote_char) { should == "\x00" }
+  end
+
   context 'broken excape' do
     let(:file) { 'spec/fixtures/files/broken_escape.csv' }
     its(:col_sep) { should == ';' }
     its(:encoding) { should == 'utf-8' }
-    its(:quote_char) { should == "'" }
+    its(:quote_char) { should == "\x00" }
   end
 
   context 'navision' do
@@ -43,7 +50,7 @@ describe CsvFormatGuesser do
     let(:file) { 'spec/fixtures/files/iso_8859-2.csv' }
     its(:encoding) { should == 'ISO-8859-2' }
     its(:col_sep) { should == ';' }
-    its(:quote_char) { should == '"' }
+    its(:quote_char) { should == "\x00" }
   end
 
 end

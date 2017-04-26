@@ -5,6 +5,9 @@ class CsvFormatGuesser
   PREVIEW_LINES = 100
   PREVIEW_BYTES = 10 * 1024
 
+  DEFAULT_ENCODING =  'UTF-8'.freeze
+  DEFAULT_QUOTE_CHAR = "\x00".freeze
+
   def initialize(path)
     @path = path
     guess_encoding()
@@ -25,12 +28,12 @@ class CsvFormatGuesser
   def guess_encoding
     cd = CharDet.detect(File.read(@path, PREVIEW_BYTES))
     @encoding = cd['encoding'] if cd
-    @encoding ||= 'UTF-8'
+    @encoding ||= DEFAULT_ENCODING
     try_encoding_with_fallback!
   rescue Encoding::UndefinedConversionError => e
     @encoding = 'ISO-8859-1' if @encoding == 'ISO-8859-7'
-  # rescue => e
-  #   @encoding ||= 'UTF-8'
+   rescue => e
+     @encoding ||= DEFAULT_ENCODING
   end
 
   def try_encoding_with_fallback!
@@ -60,43 +63,29 @@ class CsvFormatGuesser
     end
   end
 
-  COMMON_QUOTE_CHARS = [ '"', '\'', '|']
+  COMMON_QUOTE_CHARS = [ '"', '\'']
   def guess_quote_char
     readlines do |line|
       @quote_char = search_quote_char(line)
       return if @quote_char
     end
-    @quote_char ||= select_unused_quote_char
-  rescue => e
-    @quote_char ||= "'"
+    @quote_char = DEFAULT_QUOTE_CHAR
   end
 
   def search_quote_char(line)
     @used_quote_chars ||= []
     COMMON_QUOTE_CHARS.each do |char|
+      next unless line.include?(char)
+      @used_quote_chars << char
+      # should be next to field separator
       if line.include?(char)
-        @used_quote_chars << char
-        # should be next to field separator
-        if line.include?(char)
-          is_quote = false
-
-          enclosed = @col_sep + line + @col_sep
-          openings = enclosed.scan( Regexp.new(Regexp.escape(@col_sep+char)) ).length
-          closings = enclosed.scan( Regexp.new(Regexp.escape(char + @col_sep)) ).length
-
-          return char if openings > 0 && openings == closings
-        end
+        enclosed = @col_sep + line + @col_sep
+        openings = enclosed.scan( Regexp.new(Regexp.escape(@col_sep+char)) ).length
+        closings = enclosed.scan( Regexp.new(Regexp.escape(char + @col_sep)) ).length
+        return char if openings > 0 && openings == closings
       end
     end
     return nil
-  end
-
-  def select_unused_quote_char
-    COMMON_QUOTE_CHARS.each do |char|
-      return char unless @used_quote_chars.include?(char)
-    end
-    # fallback to an exotic one:
-    return "\x00"
   end
 
   def preview_lines
