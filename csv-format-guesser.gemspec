@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "csv-format-guesser"
-  spec.version       = '0.0.2'
+  spec.version       = '0.1.0'
   spec.authors       = ["Eugen Martin"]
   spec.email         = ["eugenius martinus ad gmail"]
   spec.description   = %q{Guess format and encoding of .csv/.tsv files to generate options compatible with ruby CSV class. Works with ruby2.0 }
