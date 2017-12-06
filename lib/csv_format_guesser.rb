@@ -32,8 +32,8 @@ class CsvFormatGuesser
     try_encoding_with_fallback!
   rescue Encoding::UndefinedConversionError => e
     @encoding = 'ISO-8859-1' if @encoding == 'ISO-8859-7'
-   rescue => e
-     @encoding ||= DEFAULT_ENCODING
+  rescue => e
+    @encoding = DEFAULT_ENCODING
   end
 
   def try_encoding_with_fallback!
