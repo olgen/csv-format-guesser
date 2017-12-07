@@ -1,7 +1,7 @@
 require 'rchardet'
 class CsvFormatGuesser
   attr_reader :encoding, :col_sep, :quote_char
-  VERSION = '0.0.1'
+  VERSION = '0.0.2'
   PREVIEW_LINES = 100
   PREVIEW_BYTES = 10 * 1024
 
