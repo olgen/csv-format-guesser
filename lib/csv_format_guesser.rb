@@ -1,9 +1,10 @@
 require 'rchardet'
 class CsvFormatGuesser
   attr_reader :encoding, :col_sep, :quote_char
-  VERSION = '0.0.2'
+  VERSION = '0.0.3'
   PREVIEW_LINES = 100
   PREVIEW_BYTES = 10 * 1024
+  MAX_LINES = 10000
 
   DEFAULT_ENCODING =  'UTF-8'.freeze
   DEFAULT_QUOTE_CHAR = "\x00".freeze
@@ -37,8 +38,8 @@ class CsvFormatGuesser
   end
 
   def try_encoding_with_fallback!
-    File.open(@path, "r", encoding: @encoding) do |f|
-      f.read
+    File.foreach(@path, encoding: @encoding).first(MAX_LINES).each_with_object(true) do |line, r|
+      r &&= line.valid_encoding?
     end
   end
 
@@ -92,7 +93,7 @@ class CsvFormatGuesser
     @preview_lines ||= readlines(PREVIEW_LINES)
   end
 
-  def readlines(max = nil, &block)
+  def readlines(max = MAX_LINES, &block)
     lines = []
     File.open(@path, "r:#{@encoding}:utf-8") do |f|
       i = 0
