@@ -38,9 +38,7 @@ class CsvFormatGuesser
   end
 
   def try_encoding_with_fallback!
-    File.foreach(@path, encoding: @encoding).first(MAX_LINES).each_with_object(true) do |line, r|
-      r &&= line.valid_encoding?
-    end
+    File.foreach(@path, encoding: @encoding).first(MAX_LINES).all?(&:valid_encoding?)
   end
 
   POTENTIAL_COL_SEP_REGEX = /[^\w ]/i
